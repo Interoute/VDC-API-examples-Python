@@ -4,9 +4,9 @@
 #   Purpose: Deploy a virtual machine
 #   Requires: class VDCApiCall in the file vdc_api_call.py
 # For download and information: 
-#   http://cloudstore.interoute.com/main/knowledge-centre/library/vdc-api-python-scripts
+#   https://github.com/Interoute/VDC-API-examples-Python
 #
-# Copyright (C) Interoute Communications Limited, 2014
+# Copyright (C) Interoute Communications Limited, 2016
 
 from __future__ import print_function
 import vdc_api_call as vdc
@@ -16,7 +16,6 @@ import os
 import pprint
 
 if __name__ == '__main__':
-    cloudinit_scripts_dir = 'cloudinit-scripts'
     config_file = os.path.join(os.path.expanduser('~'), '.vdcapi')
     if os.path.isfile(config_file):
         with open(config_file) as fh:
@@ -25,10 +24,6 @@ if __name__ == '__main__':
             api_url = config['api_url']
             apiKey = config['api_key']
             secret = config['api_secret']
-            try:
-                cloudinit_scripts_dir = config['cloudinit_scripts_dir']
-            except KeyError:
-                pass
     else:
         print('API url (e.g. http://10.220.18.115:8080/client/api):', end='')
         api_url = raw_input()
@@ -58,12 +53,16 @@ if __name__ == '__main__':
     service_offering_id = raw_input('Enter the service offering ID' +
                                     ' (from the service_offering_get_all.py' +
                                     ' script):')
+    # Get the network ID (or IDs if more than one network)
+    network_ids = raw_input('Enter the network ID, or enter more than one separated by commas' +
+                            ' (from the output of networks_get_by_zone.py):')
 
     # Deploy the VM
 
     request = {
         'serviceofferingid': service_offering_id,
         'templateid': template_id,
+        'networkids': network_ids,
         'zoneid': zone_id,
         'displayname': vm_description,
         'name': vm_hostname
